@@ -69,76 +69,14 @@
 }
 
 .prompt-item {
-    padding: 8px;
-    margin: 5px 0;
+    padding: 5px;
+    margin: 2px 0;
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 5px;
 }
 
 .prompt-item.selected {
     background-color: rgba(0, 128, 0, 0.2);
-}
-
-.prompt-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.prompt-controls {
-    display: flex;
-    gap: 5px;
-}
-
-.prompt-edit-area {
-    margin-top: 8px;
-    width: 100%;
-}
-
-.tagfilter_context_viewer {
-    margin: 10px 0;
-}
-
-.context-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--SmartThemeBorderColor);
-    margin-bottom: 10px;
-}
-
-.context-tab {
-    padding: 5px 15px;
-    cursor: pointer;
-    border-radius: 5px 5px 0 0;
-}
-
-.context-tab.active {
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--SmartThemeBorderColor);
-    border-bottom: none;
-}
-
-.context-content {
-    margin-bottom: 10px;
-}
-
-.context-content textarea {
-    width: 100%;
-    resize: vertical;
-}
-
-.context-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 5px;
-}
-
-.settings-row {
-    margin: 5px 0;
-}
-
-.margin-top-5 {
-    margin-top: 5px;
-    display: block;
 }
 
 .flex-container {
@@ -153,10 +91,6 @@
     width: 100%;
 }
 
-.padding5 {
-    padding: 5px;
-}
-
 .padding10 {
     padding: 10px;
 }
@@ -167,4 +101,132 @@
 
 .marginBot5 {
     margin-bottom: 5px;
+}
+
+/* 上下文查看器样式 */
+.context-viewer-container {
+    margin-top: 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--SmartThemeBlurTintColor);
+}
+
+.context-viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.context-viewer-title {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.context-viewer-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.context-viewer-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.context-viewer-container.expanded .context-viewer-content {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.context-viewer-text {
+    padding: 10px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    font-size: 0.85em;
+}
+
+/* 上下文编辑器样式 */
+.context-editor-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.context-editor-textarea {
+    width: 100%;
+    min-height: 300px;
+    font-family: monospace;
+    font-size: 0.9em;
+    padding: 10px;
+    resize: vertical;
+}
+
+/* 成功提示样式 */
+.tagfilter-success-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(40, 167, 69, 0.9);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.tagfilter-success-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 记录中的上下文折叠面板 */
+.chat-context-panel {
+    margin: 5px 0;
+    border: 1px dashed var(--SmartThemeBorderColor);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.chat-context-header {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.chat-context-title {
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-left: 5px;
+}
+
+.chat-context-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.chat-context-panel.expanded .chat-context-content {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.chat-context-text {
+    padding: 8px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    font-size: 0.75em;
+    opacity: 0.8;
 } 
