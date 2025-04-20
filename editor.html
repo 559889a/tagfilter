@@ -1,0 +1,45 @@
+<div id="tag_editor">
+    <div class="tag_editor">
+        <h3 class="flex-container justifyCenter alignItemsBaseline">
+            <strong>标签编辑器</strong>
+        </h3>
+
+        <div class="flex-container flexFlowColumn">
+            <div class="flex1">
+                <label for="tag_name" class="title_restorable">
+                    <small>标签名称</small>
+                </label>
+                <div>
+                    <input id="tag_name" class="text_pole textarea_compact" type="text" placeholder="为这个标签命名" />
+                </div>
+            </div>
+            <div class="flex1">
+                <label for="tag_open" class="title_restorable">
+                    <small>开始标签</small>
+                </label>
+                <div>
+                    <input id="tag_open" class="text_pole textarea_compact" type="text" placeholder="例如: <content>" />
+                </div>
+            </div>
+            <div class="flex1">
+                <label for="tag_close" class="title_restorable">
+                    <small>结束标签</small>
+                </label>
+                <div>
+                    <input id="tag_close" class="text_pole textarea_compact" type="text" placeholder="例如: </content>" />
+                </div>
+            </div>
+        </div>
+        
+        <div id="editor_info_block" class="info-block margin-top-10"></div>
+        
+        <div class="flex-container">
+            <div class="flex1 wi-enter-footer-text">
+                <label class="checkbox flex-container">
+                    <input type="checkbox" id="tag_enabled" checked />
+                    <span>启用</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div> 

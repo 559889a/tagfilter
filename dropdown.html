@@ -1,0 +1,76 @@
+<div class="tagfilter_settings">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b data-i18n="ext_tagfilter_title">
+                标签过滤器
+            </b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <div class="flex-container">
+                <div id="add_tag" class="menu_button menu_button_icon" title="添加新标签">
+                    <i class="fa-solid fa-plus"></i>
+                    <small>添加标签</small>
+                </div>
+                <div id="scan_prompt" class="menu_button menu_button_icon" title="扫描当前提示">
+                    <i class="fa-solid fa-search"></i>
+                    <small>扫描提示</small>
+                </div>
+                <div id="toggle_test_mode" class="menu_button menu_button_icon" title="测试模式">
+                    <i class="fa-solid fa-vial"></i>
+                    <small>测试模式</small>
+                </div>
+            </div>
+            
+            <div class="settings-row padding10">
+                <label class="checkbox flex-container">
+                    <input type="checkbox" id="toggle_context_viewer" checked />
+                    <span>启用上下文查看器</span>
+                </label>
+                <small class="margin-top-5">
+                    在聊天窗口下方显示发送给AI的原始和处理后的提示内容
+                </small>
+            </div>
+            
+            <div id="tagfilter_info_block" class="info-block"></div>
+            
+            <div id="tagfilter_test_mode" class="displayNone">
+                <div class="flex-container flexFlowColumn">
+                    <label for="test_input">
+                        <small>测试输入</small>
+                    </label>
+                    <textarea id="test_input" class="text_pole textarea_compact" rows="4" placeholder="在这里输入包含标签的文本进行测试..."></textarea>
+                    
+                    <label for="test_output" class="marginTop5">
+                        <small>处理后的结果</small>
+                    </label>
+                    <textarea id="test_output" class="text_pole textarea_compact" rows="4" placeholder="处理后的结果将显示在这里..." readonly></textarea>
+                </div>
+            </div>
+            
+            <hr />
+            
+            <div class="padding5">
+                <div>
+                    <strong>已定义标签</strong>
+                </div>
+                <small>
+                    这些标签内的内容将在发送到LLM时被过滤掉，但在界面上可见。
+                </small>
+                <div id="tag_container" class="tag-container flexFlowColumn"></div>
+            </div>
+            
+            <hr />
+            
+            <div id="prompt_scan_block" class="padding5 displayNone">
+                <div>
+                    <strong>提示扫描结果</strong>
+                </div>
+                <small>
+                    选择要保留的提示段落（不勾选的将被过滤）。你可以编辑、重新排序这些段落。
+                </small>
+                <div id="prompt_list_container" class="prompt-list-container"></div>
+            </div>
+        </div>
+    </div>
+</div> 

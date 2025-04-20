@@ -1,0 +1,170 @@
+.tagfilter_settings .menu_button {
+    width: fit-content;
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+}
+
+.tagfilter_settings .checkbox {
+    align-items: center;
+}
+
+.tag-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tag-container:empty::after {
+    content: "未找到标签";
+    font-size: 0.95em;
+    opacity: 0.7;
+    display: block;
+    text-align: center;
+}
+
+.tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    padding: 5px 8px;
+    margin: 5px 0;
+}
+
+.tag-item .tag-name {
+    flex-grow: 1;
+}
+
+.tag-item .tag-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.tag-preview {
+    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+#tagfilter_info_block {
+    margin: 10px 0;
+    padding: 5px 20px;
+    font-size: 0.9em;
+}
+
+#tagfilter_test_mode {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+}
+
+.prompt-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 10px 0;
+}
+
+.prompt-item {
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 5px;
+}
+
+.prompt-item.selected {
+    background-color: rgba(0, 128, 0, 0.2);
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prompt-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.prompt-edit-area {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.tagfilter_context_viewer {
+    margin: 10px 0;
+}
+
+.context-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+    margin-bottom: 10px;
+}
+
+.context-tab {
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+}
+
+.context-tab.active {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-bottom: none;
+}
+
+.context-content {
+    margin-bottom: 10px;
+}
+
+.context-content textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+.context-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.settings-row {
+    margin: 5px 0;
+}
+
+.margin-top-5 {
+    margin-top: 5px;
+    display: block;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flexFlowColumn {
+    flex-flow: column;
+}
+
+.wide100p {
+    width: 100%;
+}
+
+.padding5 {
+    padding: 5px;
+}
+
+.padding10 {
+    padding: 10px;
+}
+
+.marginTop5 {
+    margin-top: 5px;
+}
+
+.marginBot5 {
+    margin-bottom: 5px;
+} 
