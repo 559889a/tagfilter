@@ -1,6 +1,6 @@
 import { callPopup, eventSource, event_types, saveSettingsDebounced, substituteParams } from '../../../script.js';
 import { extension_settings, getContext, renderExtensionTemplate, renderExtensionTemplateAsync } from '../../extensions.js';
-import { callGenericPopup, POPUP_TYPE, toastr } from '../../popup.js';
+import { callGenericPopup, POPUP_TYPE } from '../../popup.js';
 import { uuidv4, setInfoBlock, parseJsonFile } from '../../utils.js';
 import { processTagsInText, analyzeTagsInText, validateTag, showTagInfo } from './engine.js';
 
@@ -10,8 +10,7 @@ if (!extension_settings.tagfilter) {
         tags: [],
         excludedPrompts: [],
         enabled: true,
-        showContext: true,
-        promptOrder: []
+        showContext: true
     };
 }
 
@@ -46,7 +45,6 @@ async function loadTags() {
                 extension_settings.tagfilter.tags = extension_settings.tagfilter.tags.filter(t => t.id !== tag.id);
                 saveSettingsDebounced();
                 await loadTags();
-                toastr.success('标签已删除');
             }
         });
         
@@ -121,7 +119,6 @@ async function openTagEditor(tagId) {
         
         saveSettingsDebounced();
         await loadTags();
-        toastr.success(existingTag ? '标签已更新' : '标签已添加');
     }
 }
 
@@ -159,40 +156,24 @@ async function scanCurrentPrompt() {
         
         jQuery('#prompt_list_container').empty();
         
-        // 使用保存的排序顺序或创建默认顺序
-        let orderedIndices = [...extension_settings.tagfilter.promptOrder];
-        while (orderedIndices.length < promptParts.length) {
-            orderedIndices.push(orderedIndices.length);
-        }
-        
-        // 确保orderedIndices不超过promptParts长度
-        if (orderedIndices.length > promptParts.length) {
-            orderedIndices = orderedIndices.slice(0, promptParts.length);
-        }
-        
-        // 保存当前排序顺序
-        extension_settings.tagfilter.promptOrder = orderedIndices;
-        saveSettingsDebounced();
-        
-        // 按排序顺序显示提示部分
-        for (let i = 0; i < orderedIndices.length; i++) {
-            const index = orderedIndices[i];
-            const part = promptParts[index];
+        // 按顺序显示提示部分
+        for (let i = 0; i < promptParts.length; i++) {
+            const part = promptParts[i];
             
             if (!part.trim()) continue;
             
             const promptHtml = promptTemplate.clone();
-            promptHtml.attr('data-index', index);
-            promptHtml.attr('data-order', i);
+            promptHtml.attr('data-index', i);
             
-            const isExcluded = extension_settings.tagfilter.excludedPrompts.includes(index);
+            // 检查此部分是否在排除列表中
+            const isExcluded = extension_settings.tagfilter.excludedPrompts.includes(i);
             promptHtml.find('.prompt-checkbox').prop('checked', !isExcluded);
             
-            // 设置编辑区域文本
+            // 设置文本和编辑区域
             promptHtml.find('.prompt-text').text(part.length > 100 ? part.substring(0, 100) + '...' : part);
             promptHtml.find('.prompt-edit-area').val(part);
             
-            // 添加事件处理
+            // 添加复选框更改事件
             promptHtml.find('.prompt-checkbox').on('change', function() {
                 const isChecked = jQuery(this).is(':checked');
                 const partIndex = parseInt(promptHtml.attr('data-index'));
@@ -208,7 +189,6 @@ async function scanCurrentPrompt() {
                 }
                 
                 saveSettingsDebounced();
-                toastr.success(isChecked ? '提示段落已启用' : '提示段落已禁用');
             });
             
             // 添加编辑按钮事件
@@ -235,7 +215,6 @@ async function scanCurrentPrompt() {
                     editArea.hide();
                     textPreview.show();
                     jQuery(this).find('i').removeClass('fa-save').addClass('fa-pencil');
-                    toastr.success('提示段落已更新');
                 } else {
                     // 显示编辑区域
                     textPreview.hide();
@@ -246,35 +225,44 @@ async function scanCurrentPrompt() {
             
             // 添加上移按钮事件
             promptHtml.find('.move-up-btn').on('click', function() {
-                const currentOrder = parseInt(promptHtml.attr('data-order'));
-                if (currentOrder > 0) {
-                    // 交换当前项和上一项
-                    const temp = orderedIndices[currentOrder];
-                    orderedIndices[currentOrder] = orderedIndices[currentOrder - 1];
-                    orderedIndices[currentOrder - 1] = temp;
-                    
-                    // 保存并重新加载
-                    extension_settings.tagfilter.promptOrder = orderedIndices;
-                    saveSettingsDebounced();
-                    scanCurrentPrompt();
-                    toastr.success('提示段落已上移');
+                const partIndex = parseInt(promptHtml.attr('data-index'));
+                if (partIndex > 0) {
+                    // 获取上下文
+                    const context = getContext();
+                    if (context && context.prompt) {
+                        const parts = context.prompt.split('\n\n');
+                        
+                        // 交换当前段落与上一段落
+                        [parts[partIndex], parts[partIndex - 1]] = [parts[partIndex - 1], parts[partIndex]];
+                        
+                        // 更新上下文
+                        context.prompt = parts.join('\n\n');
+                        
+                        // 重新扫描显示
+                        scanCurrentPrompt();
+                    }
                 }
             });
             
             // 添加下移按钮事件
             promptHtml.find('.move-down-btn').on('click', function() {
-                const currentOrder = parseInt(promptHtml.attr('data-order'));
-                if (currentOrder < orderedIndices.length - 1) {
-                    // 交换当前项和下一项
-                    const temp = orderedIndices[currentOrder];
-                    orderedIndices[currentOrder] = orderedIndices[currentOrder + 1];
-                    orderedIndices[currentOrder + 1] = temp;
+                const partIndex = parseInt(promptHtml.attr('data-index'));
+                
+                // 获取上下文
+                const context = getContext();
+                if (context && context.prompt) {
+                    const parts = context.prompt.split('\n\n');
                     
-                    // 保存并重新加载
-                    extension_settings.tagfilter.promptOrder = orderedIndices;
-                    saveSettingsDebounced();
-                    scanCurrentPrompt();
-                    toastr.success('提示段落已下移');
+                    if (partIndex < parts.length - 1) {
+                        // 交换当前段落与下一段落
+                        [parts[partIndex], parts[partIndex + 1]] = [parts[partIndex + 1], parts[partIndex]];
+                        
+                        // 更新上下文
+                        context.prompt = parts.join('\n\n');
+                        
+                        // 重新扫描显示
+                        scanCurrentPrompt();
+                    }
                 }
             });
             
@@ -286,7 +274,6 @@ async function scanCurrentPrompt() {
     } catch (error) {
         console.error('扫描提示失败:', error);
         console.error('扫描提示失败: ' + error.message);
-        toastr.error(`扫描提示失败: ${error.message}`);
     }
 }
 
@@ -302,8 +289,8 @@ function handlePromptGeneration(data) {
     try {
         if (data.prompt) {
             // 显示原始提示到上下文查看器
-            if (extension_settings.tagfilter.showContext) {
-                displayContextViewer(data.prompt);
+            if (extension_settings.tagfilter.showContext && jQuery('#tagfilter_context_viewer').length) {
+                jQuery('#context_original').val(data.prompt);
             }
             
             // 将提示分割为段落
@@ -321,96 +308,91 @@ function handlePromptGeneration(data) {
             data.prompt = processedParts.join('\n\n');
             
             // 显示处理后的提示到上下文查看器
-            if (extension_settings.tagfilter.showContext) {
-                displayProcessedContextViewer(data.prompt);
+            if (extension_settings.tagfilter.showContext && jQuery('#tagfilter_context_viewer').length) {
+                jQuery('#context_processed').val(data.prompt);
             }
         }
     } catch (error) {
         console.error('处理提示失败:', error);
-        toastr.error(`处理提示失败: ${error.message}`);
     }
 }
 
 /**
- * 显示原始上下文到查看器
- * @param {string} text 原始提示文本
+ * 创建上下文查看器
  */
-function displayContextViewer(text) {
-    const contextViewer = jQuery('#tagfilter_context_viewer');
-    if (contextViewer.length) {
-        contextViewer.find('#context_original').val(text);
-    } else {
-        const viewerHtml = `
-            <div id="tagfilter_context_viewer" class="tagfilter_context_viewer">
-                <div class="inline-drawer">
-                    <div class="inline-drawer-toggle inline-drawer-header">
-                        <b>提示上下文查看器</b>
-                        <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+function createContextViewer() {
+    if (jQuery('#tagfilter_context_viewer').length) {
+        return;
+    }
+    
+    const viewerHtml = `
+        <div id="tagfilter_context_viewer" class="tagfilter_context_viewer">
+            <div class="inline-drawer">
+                <div class="inline-drawer-toggle inline-drawer-header">
+                    <b>提示上下文查看器</b>
+                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+                </div>
+                <div class="inline-drawer-content" style="display:none;">
+                    <div class="context-tabs">
+                        <div class="context-tab active" data-tab="original">原始提示</div>
+                        <div class="context-tab" data-tab="processed">处理后提示</div>
                     </div>
-                    <div class="inline-drawer-content" style="display:none;">
-                        <div class="context-tabs">
-                            <div class="context-tab active" data-tab="original">原始提示</div>
-                            <div class="context-tab" data-tab="processed">处理后提示</div>
-                        </div>
-                        <div class="context-content">
-                            <textarea id="context_original" class="text_pole textarea_compact" rows="10" readonly></textarea>
-                            <textarea id="context_processed" class="text_pole textarea_compact" rows="10" style="display:none;" readonly></textarea>
-                        </div>
-                        <div class="context-actions">
-                            <button id="copy_context" class="menu_button">复制当前内容</button>
-                            <button id="refresh_context" class="menu_button">刷新内容</button>
-                        </div>
+                    <div class="context-content">
+                        <textarea id="context_original" class="text_pole textarea_compact" rows="10" readonly></textarea>
+                        <textarea id="context_processed" class="text_pole textarea_compact" rows="10" style="display:none;" readonly></textarea>
+                    </div>
+                    <div class="context-actions">
+                        <button id="copy_context" class="menu_button">复制当前内容</button>
+                        <button id="refresh_context" class="menu_button">刷新内容</button>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
+    
+    jQuery('#send_form').after(viewerHtml);
+    
+    // 添加标签切换事件
+    jQuery('.context-tab').on('click', function() {
+        const tab = jQuery(this).data('tab');
+        jQuery('.context-tab').removeClass('active');
+        jQuery(this).addClass('active');
         
-        jQuery('#send_form').after(viewerHtml);
+        if (tab === 'original') {
+            jQuery('#context_original').show();
+            jQuery('#context_processed').hide();
+        } else {
+            jQuery('#context_original').hide();
+            jQuery('#context_processed').show();
+        }
+    });
+    
+    // 添加复制按钮事件
+    jQuery('#copy_context').on('click', function() {
+        const activeTab = jQuery('.context-tab.active').data('tab');
+        const text = activeTab === 'original' ? jQuery('#context_original').val() : jQuery('#context_processed').val();
         
-        jQuery('#tagfilter_context_viewer').find('#context_original').val(text);
-        
-        // 添加事件处理
-        jQuery('.context-tab').on('click', function() {
-            const tab = jQuery(this).data('tab');
-            jQuery('.context-tab').removeClass('active');
-            jQuery(this).addClass('active');
-            
-            if (tab === 'original') {
-                jQuery('#context_original').show();
-                jQuery('#context_processed').hide();
-            } else {
-                jQuery('#context_original').hide();
-                jQuery('#context_processed').show();
-            }
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败: ', err);
         });
-        
-        jQuery('#copy_context').on('click', function() {
-            const activeTab = jQuery('.context-tab.active').data('tab');
-            const text = activeTab === 'original' ? jQuery('#context_original').val() : jQuery('#context_processed').val();
-            
-            navigator.clipboard.writeText(text).then(() => {
-                toastr.success('已复制到剪贴板');
-            }).catch(err => {
-                console.error('复制失败: ', err);
-                toastr.error('复制失败');
-            });
-        });
-        
-        jQuery('#refresh_context').on('click', function() {
-            scanCurrentPrompt();
-            toastr.info('正在刷新上下文...');
-        });
-    }
+    });
+    
+    // 添加刷新按钮事件
+    jQuery('#refresh_context').on('click', function() {
+        scanCurrentPrompt();
+    });
 }
 
 /**
- * 显示处理后上下文到查看器
- * @param {string} text 处理后提示文本
+ * 初始化上下文查看器
  */
-function displayProcessedContextViewer(text) {
-    const contextViewer = jQuery('#tagfilter_context_viewer');
-    if (contextViewer.length) {
-        contextViewer.find('#context_processed').val(text);
+function initContextViewer() {
+    if (extension_settings.tagfilter.showContext) {
+        createContextViewer();
+    } else {
+        jQuery('#tagfilter_context_viewer').remove();
     }
 }
 
@@ -447,28 +429,18 @@ jQuery(async () => {
         extension_settings.tagfilter.showContext = isChecked;
         saveSettingsDebounced();
         
-        if (isChecked) {
-            const context = getContext();
-            if (context && context.prompt) {
-                displayContextViewer(context.prompt);
-                displayProcessedContextViewer(processTagsInText(context.prompt, true));
-            }
-        } else {
-            jQuery('#tagfilter_context_viewer').remove();
-        }
-        
-        toastr.info(isChecked ? '上下文查看器已启用' : '上下文查看器已禁用');
+        initContextViewer();
     });
     
     // 初始化上下文查看器开关状态
     jQuery('#toggle_context_viewer').prop('checked', extension_settings.tagfilter.showContext !== false);
+    
+    // 初始化上下文查看器
+    initContextViewer();
     
     // 加载保存的标签
     await loadTags();
     
     // 添加事件监听以在生成前处理提示
     eventSource.on(event_types.GENERATE_BEFORE_COMBINE_PROMPTS, handlePromptGeneration);
-    
-    // 提示初始化完成
-    toastr.success('标签过滤器已加载');
 }); 

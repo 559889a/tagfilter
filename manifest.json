@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "style.css",
     "author": "SillyTavern用户",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "description": "一个用于过滤提示中特定标签内容的工具，支持上下文查看、编辑和排序",
-    "homePage": "https://github.com/SillyTavern/SillyTavern-tagfilter"
+    "homePage": "https://github.com/SillyTavern/SillyTavern"
 } 

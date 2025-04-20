@@ -8,13 +8,12 @@
 - **上下文查看器**：在聊天界面查看发送给AI的原始和过滤后的内容
 - **提示编辑**：编辑、排序和选择性过滤提示段落
 - **测试模式**：测试标签过滤效果
-- **提示通知**：操作完成后显示成功提示
 
 ## 安装方法
 
 1. 访问SillyTavern的扩展管理页面
 2. 点击"从URL安装"
-3. 输入以下链接：`https://github.com/SillyTavern/SillyTavern-tagfilter`
+3. 输入以下链接：`https://github.com/SillyTavern/SillyTavern`
 4. 点击安装
 
 或者手动安装：
